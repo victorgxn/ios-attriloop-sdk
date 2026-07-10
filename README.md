@@ -108,9 +108,9 @@ The **consumer app** must point Apple's developer-copy endpoints at the edge in
 
 ```xml
 <key>NSAdvertisingAttributionReportEndpoint</key>
-<string>https://edge.attriloop.com</string>
+<string>https://api.attriloop.com</string>
 <key>AttributionCopyEndpoint</key>
-<string>https://edge.attriloop.com</string>
+<string>https://api.attriloop.com</string>
 ```
 
 The exact host is shown in the **Attriloop console → SDK setup**. Without these keys,

@@ -40,7 +40,7 @@ public final class Attriloop {
     // internal (not private): the Conversion extension lives in another file and needs
     // these to talk to the same endpoint with the same key.
     var apiKey = ""
-    var baseURL = URL(string: "https://edge.attriloop.com")!
+    var baseURL = URL(string: "https://api.attriloop.com")!
     var isDebug = false
     let session = URLSession.shared
     private let sdkVersion = "ios/0.1.0"
