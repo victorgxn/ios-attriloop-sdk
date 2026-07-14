@@ -438,8 +438,9 @@ public final class Attriloop {
     ///
     /// Two shapes are accepted:
     ///  - a URL carrying an explicit `at_click` query token (custom-scheme redirect);
-    ///  - a Universal Link `https://<host>/l/<token>/<slug>`, which is resolved via
-    ///    `/v1/resolve` to fetch the click id + `deep_link_value` for that link.
+    ///  - a Universal Link — shared host `https://<host>/l/<token>/<slug>` or branded
+    ///    workspace domain `https://<host>/l/<slug>` — resolved via `/v1/resolve`
+    ///    to fetch the click id + `deep_link_value` for that link.
     public func handleDeepLink(_ url: URL) {
         // Explicit at_click token on the URL (custom scheme).
         if let comps = URLComponents(url: url, resolvingAgainstBaseURL: false),
@@ -449,11 +450,22 @@ public final class Attriloop {
             startPolling()
             return
         }
-        // Namespaced Universal Link path /l/<token>/<slug>.
-        let parts = url.pathComponents.filter { $0 != "/" }
-        if parts.count >= 3, parts[0] == "l" {
-            resolveDeepLink(slug: parts[2])
+        if let slug = Self.universalLinkSlug(url) {
+            resolveDeepLink(slug: slug)
         }
+    }
+
+    /// Extract the resolvable slug from a Universal-Link path, or nil for
+    /// non-link URLs. The slug is the LAST component in both link shapes
+    /// (/l/<token>/<slug> on shared hosts, /l/<slug> on branded workspace
+    /// domains); /v1/resolve is API-key-scoped, so the token/host isn't
+    /// needed to look the slug up.
+    static func universalLinkSlug(_ url: URL) -> String? {
+        let parts = url.pathComponents.filter { $0 != "/" }
+        guard parts.count >= 2, parts[0] == "l", let slug = parts.last, !slug.isEmpty else {
+            return nil
+        }
+        return slug
     }
 
     /// Resolve a Universal Link's slug to its click id + deep-link value.

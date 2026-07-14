@@ -35,6 +35,24 @@ final class AttriloopSDKTests: XCTestCase {
         XCTAssertFalse(Attriloop.isDroppableCustom(.login, ""))
     }
 
+    // MARK: - Universal-Link slug parsing
+
+    func testUniversalLinkSlugSharedHostShape() {
+        let url = URL(string: "https://go.attriloop.com/l/tok123/mySlug")!
+        XCTAssertEqual(Attriloop.universalLinkSlug(url), "mySlug")
+    }
+
+    func testUniversalLinkSlugBrandedDomainShape() {
+        let url = URL(string: "https://go.faithlocked.com/l/ns3BaBvT")!
+        XCTAssertEqual(Attriloop.universalLinkSlug(url), "ns3BaBvT")
+    }
+
+    func testUniversalLinkSlugRejectsNonLinkPaths() {
+        XCTAssertNil(Attriloop.universalLinkSlug(URL(string: "https://go.attriloop.com/l")!))
+        XCTAssertNil(Attriloop.universalLinkSlug(URL(string: "https://go.attriloop.com/")!))
+        XCTAssertNil(Attriloop.universalLinkSlug(URL(string: "https://go.attriloop.com/x/tok/slug")!))
+    }
+
     // MARK: - jsonSanitized
 
     func testJsonSanitizedDropsNSNull() {
